@@ -1,0 +1,8 @@
+zone "." IN {
+	type slave;
+	masters {
+		192.168.16.101;
+	};
+	file "slaves/exigency_root.ca";
+};
+

@@ -1,0 +1,37 @@
+#!/bin/bash
+
+usage() {
+	echo "Usage: $(basename $0) <-u unix_sock> <-w dnstap_file>" \
+	     "<-s statistic period>"
+	exit 1
+}
+
+unix_sock_path=""
+dnstap_file=""
+stats_period=300
+while getopts "hu:w:s:" arg; do
+	case $arg in 
+		u)
+			unix_sock_path=${OPTARG}
+			;;
+		w)
+			dnstap_file=${OPTARG}
+			;;
+		s)
+			stats_period=${OPTARG}
+			;;
+		h|*)
+			usage
+			;;
+	esac
+done
+
+if test -z ${unix_sock_path}; then
+	usage
+fi
+
+if test -z ${dnstap_file}; then
+	usage
+fi
+
+su -m named -c "fstrm_capture -t protobuf:dnstap.Dnstap -u ${unix_sock_path} -w ${dnstap_file} -s ${stats_period} --localtime&"
